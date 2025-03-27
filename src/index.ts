@@ -1,23 +1,33 @@
-import { fromHono } from "chanfana";
-import { Hono } from "hono";
-import { TaskCreate } from "./endpoints/taskCreate";
-import { TaskDelete } from "./endpoints/taskDelete";
-import { TaskFetch } from "./endpoints/taskFetch";
-import { TaskList } from "./endpoints/taskList";
-
-// Start a Hono app
-const app = new Hono();
-
-// Setup OpenAPI registry
-const openapi = fromHono(app, {
-	docs_url: "/",
-});
-
-// Register OpenAPI endpoints
-openapi.get("/api/tasks", TaskList);
-openapi.post("/api/tasks", TaskCreate);
-openapi.get("/api/tasks/:taskSlug", TaskFetch);
-openapi.delete("/api/tasks/:taskSlug", TaskDelete);
-
-// Export the Hono app
-export default app;
+export interface Env {
+	FORM_SUBMISSIONS: KVNamespace;
+  }
+  
+  export default {
+	async fetch(request: Request, env: Env): Promise<Response> {
+	  if (request.method !== 'POST') {
+		return new Response('Method Not Allowed', { status: 405 });
+	  }
+  
+	  try {
+		const body = await request.json();
+  
+		const { imie, nazwisko, email, firma } = body;
+  
+		if (!imie || !nazwisko || !email) {
+		  return new Response('Brakuje wymaganych danych.', { status: 400 });
+		}
+  
+		const timestamp = new Date().toISOString();
+		const key = `submission:${timestamp}`;
+  
+		const value = JSON.stringify({ imie, nazwisko, email, firma, timestamp });
+  
+		await env.FORM_SUBMISSIONS.put(key, value);
+  
+		return new Response('OK', { status: 200 });
+	  } catch (err) {
+		return new Response('Błąd przetwarzania danych', { status: 500 });
+	  }
+	},
+  };
+  
