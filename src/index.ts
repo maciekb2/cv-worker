@@ -1,10 +1,22 @@
+import * as Sentry from "@sentry/cloudflare";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type"
 };
 
-export default {
+
+function createSentryOptions(env) {
+  return {
+    dsn: env.SENTRY_DSN,
+    environment: env.SENTRY_ENVIRONMENT,
+    release: env.SENTRY_RELEASE,
+    enableLogs: true,
+    tracesSampleRate: Number(env.SENTRY_TRACES_SAMPLE_RATE ?? "0.1") || 0.1,
+  };
+}
+
+const handler = {
   async fetch(request, env) {
     const url = new URL(request.url);
     const path = url.pathname;
@@ -101,3 +113,5 @@ async function handleFormContact(request, kv) {
     });
   }
 }
+
+export default Sentry.withSentry(createSentryOptions, handler);

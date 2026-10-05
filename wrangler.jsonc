@@ -1,60 +1,37 @@
-/**
- * For more details on how to configure Wrangler, refer to:
- * https://developers.cloudflare.com/workers/wrangler/configuration/
- */
- {
-	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "cv-worker",
-	"main": "src/index.ts",
-	"compatibility_date": "2025-03-21",
-	"observability": {
-	  "enabled": true
-	},
-	"kv_namespaces": [
-	  {
-		"binding": "FORM_SUBMISSIONS",
-		"id": "2762bdf1418a46d182114921ebd2cd0d"
-	  },
-	  {
-		"binding": "FORM_CONTACT",
-		"id": "a99269366bbb44b38aa80b47d7f15dc8"
-	  }
-	]
-  
-
-
-  /**
-	 * Smart Placement
-	 * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
-	 */
-	// "placement": { "mode": "smart" },
-
-	/**
-	 * Bindings
-	 * Bindings allow your Worker to interact with resources on the Cloudflare Developer Platform, including
-	 * databases, object storage, AI inference, real-time communication and more.
-	 * https://developers.cloudflare.com/workers/runtime-apis/bindings/
-	 */
-
-	/**
-	 * Environment Variables
-	 * https://developers.cloudflare.com/workers/wrangler/configuration/#environment-variables
-	 */
-	// "vars": { "MY_VARIABLE": "production_value" },
-	/**
-	 * Note: Use secrets to store sensitive data.
-	 * https://developers.cloudflare.com/workers/configuration/secrets/
-	 */
-
-	/**
-	 * Static Assets
-	 * https://developers.cloudflare.com/workers/static-assets/binding/
-	 */
-	// "assets": { "directory": "./public/", "binding": "ASSETS" },
-
-	/**
-	 * Service Bindings (communicate between multiple Workers)
-	 * https://developers.cloudflare.com/workers/wrangler/configuration/#service-bindings
-	 */
-	// "services": [{ "binding": "MY_SERVICE", "service": "my-service" }]
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "cv-worker",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-03-21",
+  "vars": {
+    "SENTRY_DSN": "https://702116f519f5b60d93f78af3f70f2ba3@o4510385780031488.ingest.de.sentry.io/4511257724715089",
+    "SENTRY_ENVIRONMENT": "production",
+    "SENTRY_RELEASE": "cv-worker@manual",
+    "SENTRY_TRACES_SAMPLE_RATE": "0.1"
+  },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1,
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "persist": true,
+      "invocation_logs": true
+    },
+    "traces": {
+      "enabled": true,
+      "persist": true,
+      "head_sampling_rate": 1
+    }
+  },
+  "kv_namespaces": [
+    {
+      "binding": "FORM_SUBMISSIONS",
+      "id": "2762bdf1418a46d182114921ebd2cd0d"
+    },
+    {
+      "binding": "FORM_CONTACT",
+      "id": "a99269366bbb44b38aa80b47d7f15dc8"
+    }
+  ]
 }
